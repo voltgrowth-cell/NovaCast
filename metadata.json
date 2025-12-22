@@ -1,0 +1,8 @@
+{
+  "name": "NovaCast Pro: Mac-to-Android Display",
+  "description": "A high-performance screen mirroring and extension dashboard designed to turn your Android device into a secondary high-resolution monitor for Mac. Features AI-powered content analysis and real-time performance tracking.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
