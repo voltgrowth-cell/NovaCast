@@ -1,10 +1,22 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+/**
+ * Helper to get the API key safely in browser environments
+ */
+const getApiKey = () => {
+  try {
+    return (typeof process !== 'undefined' && process.env && process.env.API_KEY) ? process.env.API_KEY : '';
+  } catch (e) {
+    return '';
+  }
+};
 
 export const analyzeScreenContent = async (imageData: string, prompt: string) => {
   try {
+    const apiKey = getApiKey();
+    const ai = new GoogleGenAI({ apiKey });
+    
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: {
@@ -22,12 +34,15 @@ export const analyzeScreenContent = async (imageData: string, prompt: string) =>
     return response.text;
   } catch (error) {
     console.error("Gemini Analysis Error:", error);
-    return "Failed to analyze screen content. Please check your connection stability.";
+    return "Failed to analyze screen content. Please check if your API key is correctly set in the environment variables.";
   }
 };
 
 export const chatWithScreenAssistant = async (history: { role: string, parts: { text: string }[] }[], message: string) => {
   try {
+    const apiKey = getApiKey();
+    const ai = new GoogleGenAI({ apiKey });
+    
     const chat = ai.chats.create({
       model: 'gemini-3-flash-preview',
       config: {
@@ -45,6 +60,6 @@ export const chatWithScreenAssistant = async (history: { role: string, parts: { 
     return response.text;
   } catch (error) {
     console.error("Gemini Chat Error:", error);
-    return "I'm experiencing a bit of lag in my reasoning core. Please retry.";
+    return "I'm having trouble connecting to the AI engine. Please verify your internet connection and API key configuration.";
   }
 };
