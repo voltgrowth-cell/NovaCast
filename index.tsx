@@ -6,23 +6,21 @@ import App from './App';
 const rootElement = document.getElementById('root');
 
 if (rootElement) {
-  try {
-    const root = ReactDOM.createRoot(rootElement);
-    root.render(
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    );
-
-    // Immediate attempt to hide loader
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+  
+  // Custom event to remove loader once App is ready
+  window.addEventListener('novacast-ready', () => {
     const loader = document.getElementById('loader');
     if (loader) {
       loader.style.opacity = '0';
       setTimeout(() => loader.remove(), 500);
     }
-  } catch (err) {
-    console.error("Mounting Error:", err);
-  }
+  });
 } else {
   console.error("Critical: #root element not found");
 }
