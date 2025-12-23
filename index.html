@@ -61,18 +61,29 @@
 }
 </script>
 <script>
-    // Comprehensive error capture
+    // Fail-safe: Force hide loader after 5 seconds if React fails to mount
+    setTimeout(() => {
+        const loader = document.getElementById('loader');
+        if (loader && loader.style.opacity !== '0') {
+            console.warn("Loader hidden by fail-safe timeout.");
+            loader.style.opacity = '0';
+            setTimeout(() => loader.remove(), 500);
+        }
+    }, 5000);
+
+    // Comprehensive error capture to debug Vercel blank screens
     window.onerror = function(msg, url, line, col, error) {
+        console.error("Critical Error:", msg, url, line, col, error);
         const overlay = document.getElementById('error-overlay');
         if (overlay) {
             overlay.style.display = 'block';
             overlay.innerHTML = `
-                <h1 style="font-size: 24px; margin-bottom: 20px;">NovaCast: Boot Error</h1>
+                <h1 style="font-size: 24px; margin-bottom: 20px; color: #fff;">NovaCast: Boot Error</h1>
                 <p><strong>Message:</strong> ${msg}</p>
                 <p><strong>Source:</strong> ${url}</p>
                 <p><strong>Line/Col:</strong> ${line}:${col}</p>
-                <pre style="margin-top: 20px; background: #111; padding: 15px; border-radius: 8px;">${error ? error.stack : 'No stack trace available'}</pre>
-                <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #ef4444; color: white; border: none; border-radius: 5px; cursor: pointer;">Reload Application</button>
+                <pre style="margin-top: 20px; background: #111; padding: 15px; border-radius: 8px; color: #ef4444; border: 1px solid #333;">${error ? error.stack : 'No stack trace available'}</pre>
+                <button onclick="location.reload()" style="margin-top: 20px; padding: 12px 24px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">Reload Page</button>
             `;
         }
         return false;
@@ -86,6 +97,7 @@
             <div class="absolute inset-0 flex items-center justify-center">
                 <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
             </div>
+            <p class="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-black uppercase tracking-widest text-zinc-500">Initializing Engine</p>
         </div>
     </div>
     <div id="error-overlay"></div>
