@@ -23,9 +23,6 @@
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .mac-cursor {
-            cursor: default;
-        }
         #loader {
             position: fixed;
             inset: 0;
@@ -36,11 +33,20 @@
             z-index: 9999;
             transition: opacity 0.5s ease;
         }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+        #error-overlay {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(220, 38, 38, 0.9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 12px;
+            z-index: 10000;
+            font-weight: 600;
+        }
     </style>
 <script type="importmap">
 {
@@ -57,6 +63,29 @@
   }
 }
 </script>
+<script>
+    // Fail-safe: If the app doesn't remove the loader in 4 seconds, do it anyway
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const loader = document.getElementById('loader');
+            if (loader && loader.style.opacity !== '0') {
+                console.warn('NovaCast: Taking too long to load. Force-dismissing loader.');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        }, 4000);
+    });
+
+    // Capture errors to show user if something is broken
+    window.onerror = function(msg, url, line, col, error) {
+        const overlay = document.getElementById('error-overlay');
+        if (overlay) {
+            overlay.style.display = 'block';
+            overlay.textContent = "Boot Error: " + msg;
+        }
+        return false;
+    };
+</script>
 </head>
 <body>
     <div id="loader">
@@ -67,6 +96,7 @@
             </div>
         </div>
     </div>
+    <div id="error-overlay"></div>
     <div id="root"></div>
 </body>
 </html>
